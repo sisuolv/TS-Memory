@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.DS_Store
+__MACOSX/
+wandb/
+
+# Local/Slurm outputs (repo runs from src/)
+src/logs/
+src/results/
+src/checkpoints/
+src/retrieval_database/
+src/teacher_ds/
+src/slurm-*.out
+src/slurm-*.err
+
+# Misc editor files
+*.swp
+*.swo
+*.swx
