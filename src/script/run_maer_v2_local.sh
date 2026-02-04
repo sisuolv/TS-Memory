@@ -35,8 +35,6 @@ CACHE_Q_BASE="${CACHE_Q_BASE:-1}"
 DATA_ROOT="${DATA_ROOT:-}"
 if [ -z "${DATA_ROOT}" ]; then
   for candidate in \
-    "${REPO_DIR}/../TS-RAG/all_datasets" \
-    "${REPO_DIR}/../../TS-RAG/all_datasets" \
     "${REPO_DIR}/../all_datasets" \
     "${REPO_DIR}/../../all_datasets" \
     ; do
@@ -55,10 +53,8 @@ fi
 if [ -z "${BASE_MODEL_PATH:-}" ]; then
   for candidate in \
     "${REPO_DIR}/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG-v1/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG-v1/TS-RAG/checkpoints/base" \
+    "${REPO_DIR}/../checkpoints/base" \
+    "${REPO_DIR}/../../checkpoints/base" \
     ; do
     if [ -f "${candidate}/config.json" ]; then
       BASE_MODEL_PATH="${candidate}"

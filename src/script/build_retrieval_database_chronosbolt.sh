@@ -26,7 +26,7 @@ cd "${REPO_DIR}"
 mkdir -p logs
 
 CONDA_INIT_PATH="${CONDA_INIT_PATH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
-CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsrag}"
+CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsmemory}"
 if [ -f "${CONDA_INIT_PATH}" ]; then
   # shellcheck disable=SC1090
   source "${CONDA_INIT_PATH}"
@@ -69,14 +69,13 @@ if [ ! -f "${BASE_MODEL_PATH}/config.json" ]; then
   exit 2
 fi
 # Base weights:
-# - Our default TS-RAG base checkpoint uses autogluon_model.pth as a weight override.
-# - Official HF checkpoints (e.g., checkpoints/amazon/*) may not have autogluon_model.pth; in that case,
-#   scripts/build_retrieval_database_chronosbolt.py will fall back to HF weights.
+# - Some checkpoints include an optional autogluon_model.pth as a weight override.
+# - If missing, scripts/build_retrieval_database_chronosbolt.py falls back to the weights loaded by from_pretrained.
 REQUIRE_AUTOGLOON_WEIGHTS="${REQUIRE_AUTOGLOON_WEIGHTS:-1}"  # 1: require autogluon_model.pth; 0: allow missing
 if [ ! -f "${BASE_MODEL_PATH}/autogluon_model.pth" ]; then
   if [ "${REQUIRE_AUTOGLOON_WEIGHTS}" = "1" ]; then
     echo "[error] base model weights not found: ${BASE_MODEL_PATH}/autogluon_model.pth" >&2
-    echo "        Set REQUIRE_AUTOGLOON_WEIGHTS=0 to allow using HF-only checkpoints (e.g., checkpoints/amazon/*)." >&2
+    echo "        Set REQUIRE_AUTOGLOON_WEIGHTS=0 to allow using checkpoints without an autogluon_model.pth override." >&2
     exit 2
   fi
   echo "[warn] autogluon_model.pth not found at ${BASE_MODEL_PATH}/autogluon_model.pth; using HF weights only."

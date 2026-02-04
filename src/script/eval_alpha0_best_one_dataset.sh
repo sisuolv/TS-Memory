@@ -9,15 +9,12 @@
 # Optional overrides:
 #   PRED_LENS="64 96 192 336 720" SEQ_LEN=512 BATCH_SIZE=256 NUM_WORKERS=8
 #   OUT_SUBDIR=alpha_grid_runs FORCE=1
-#   CKPT_ROOT=/path/to/memdec_ts_quantile CKPT_METHOD=C_maeR_v2_m1_time
+#   CKPT_ROOT=/path/to/checkpoints/memory_ts_quantile CKPT_METHOD=C_maeR_v2_m1_time
 #
 # Notes:
 # - alpha selection inside zeroshot.py can select on val (research-valid) or test (leaky). Default below is grid-on-test.
 #
 #SBATCH --job-name=tsmemory-alpha0best
-#SBATCH --account=ai4fin
-#SBATCH --partition=gpu
-#SBATCH --qos=gpu8
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
@@ -37,7 +34,7 @@ cd "${REPO_DIR}"
 mkdir -p logs results/forecast_evaluation
 
 CONDA_INIT_PATH="${CONDA_INIT_PATH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
-CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsrag}"
+CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsmemory}"
 if [ -f "${CONDA_INIT_PATH}" ]; then
   # shellcheck disable=SC1090
   source "${CONDA_INIT_PATH}"
@@ -72,21 +69,10 @@ export SEQ_LEN
 export PRED_LEN="${PRED_LEN:-64}"
 source "${REPO_DIR}/script/dataset_env.sh"
 
-# Resolve ckpt root (defaults to legacy memdec_ts_quantile under TS-RAG in this workspace).
-CKPT_ROOT="${CKPT_ROOT:-}"
-if [ -z "${CKPT_ROOT}" ]; then
-  for candidate in \
-    "${REPO_DIR}/../TS-RAG/TS-RAG/checkpoints/memdec_ts_quantile" \
-    "${REPO_DIR}/../../TS-RAG/TS-RAG/checkpoints/memdec_ts_quantile" \
-    ; do
-    if [ -d "${candidate}" ]; then
-      CKPT_ROOT="${candidate}"
-      break
-    fi
-  done
-fi
+# Resolve ckpt root (default: checkpoints/memory_ts_quantile under this repo checkout).
+CKPT_ROOT="${CKPT_ROOT:-${REPO_DIR}/checkpoints/memory_ts_quantile}"
 if [ -z "${CKPT_ROOT}" ] || [ ! -d "${CKPT_ROOT}" ]; then
-  echo "[error] CKPT_ROOT not found. Set CKPT_ROOT to the memdec_ts_quantile dir." >&2
+  echo "[error] CKPT_ROOT not found. Set CKPT_ROOT to the checkpoints/memory_ts_quantile dir." >&2
   exit 2
 fi
 

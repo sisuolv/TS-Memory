@@ -1233,9 +1233,8 @@ if run_mode == 'memory_quantile':
     assert 'retrieve' not in sys.modules, "retrieve imported while building non-retrieval dataloaders"
 
     # Load frozen base model (Chronos-Bolt).
-    # - For our default TS-RAG base checkpoint, we usually override the HF weights with autogluon_model.pth.
-    # - For official HF checkpoints (e.g., checkpoints/amazon/*) autogluon_model.pth may not exist; in that case we
-    #   fall back to the weights loaded by from_pretrained.
+    # Some checkpoints include an optional `autogluon_model.pth` weight override; if missing, we fall back to
+    # the weights loaded by from_pretrained.
     model_base = ChronosBoltPipeline.from_pretrained(args.pretrained_model_path)
     autogluon_state_path = os.path.join(args.pretrained_model_path, "autogluon_model.pth")
     if os.path.isfile(autogluon_state_path):

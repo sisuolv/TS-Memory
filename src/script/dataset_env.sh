@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-# Repo root (TS-RAG/TS-RAG)
+# Repo root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="${REPO_DIR:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 
@@ -15,12 +15,10 @@ REPO_DIR="${REPO_DIR:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 #   <DATA_ROOT>/weather/weather.csv
 #   <DATA_ROOT>/traffic/traffic.csv
 #
-# For this workspace, the default falls back to ../TS-RAG/all_datasets.
+# Default: try to auto-detect a nearby all_datasets directory.
 DATA_ROOT="${DATA_ROOT:-}"
 if [ -z "${DATA_ROOT}" ]; then
   for candidate in \
-    "${REPO_DIR}/../TS-RAG/all_datasets" \
-    "${REPO_DIR}/../../TS-RAG/all_datasets" \
     "${REPO_DIR}/../all_datasets" \
     "${REPO_DIR}/../../all_datasets" \
     ; do
@@ -39,7 +37,7 @@ fi
 # ---------------- dataset switch (edit here) ----------------
 DATASET_NAME="${DATASET_NAME:-ETTh1}"    # ETTh1|ETTh2|ETTm1|ETTm2|weather|traffic|electricity|exchange_rate|custom
 
-# TS-RAG-consistent default forecasting setup
+# Default forecasting setup
 SEQ_LEN="${SEQ_LEN:-512}"
 PRED_LEN="${PRED_LEN:-64}"
 LABEL_LEN="${LABEL_LEN:-0}"
@@ -52,8 +50,8 @@ EXPERIMENT_TAG="${EXPERIMENT_TAG:-${DATASET_NAME}}"
 # This lets you reuse a single teacher build across multiple memory variants.
 TEACHER_TAG="${TEACHER_TAG:-${EXPERIMENT_TAG}}"
 
-# TS-RAG datasets are standardized with StandardScaler; we keep the same scale throughout teacher/train/eval.
-FEATURES="${FEATURES:-M}"   # M recommended to match TS-RAG scripts; still yields per-feature univariate samples.
+# Datasets are standardized with StandardScaler; keep scaling consistent across teacher/train/eval.
+FEATURES="${FEATURES:-M}"   # M yields per-feature univariate samples.
 # NOTE: Some custom datasets (e.g., electricity/traffic from all_datasets) don't have an explicit "OT" column.
 # We set a dataset-aware default TARGET later after we resolve the CSV path.
 TARGET="${TARGET:-}"
@@ -90,10 +88,8 @@ TEACHER_QUERY_STRIDE="${TEACHER_QUERY_STRIDE:-}"
 if [ -z "${BASE_MODEL_PATH:-}" ]; then
   for candidate in \
     "${REPO_DIR}/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG-v1/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG-v1/TS-RAG/checkpoints/base" \
+    "${REPO_DIR}/../checkpoints/base" \
+    "${REPO_DIR}/../../checkpoints/base" \
     ; do
     if [ -f "${candidate}/config.json" ]; then
       BASE_MODEL_PATH="${candidate}"

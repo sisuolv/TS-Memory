@@ -19,7 +19,7 @@ cd "${REPO_DIR}"
 mkdir -p logs results/forecast_evaluation
 
 CONDA_INIT_PATH="${CONDA_INIT_PATH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
-CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsrag}"
+CONDA_ENV_NAME="${CONDA_ENV_NAME:-tsmemory}"
 if [ -f "${CONDA_INIT_PATH}" ]; then
   # shellcheck disable=SC1090
   source "${CONDA_INIT_PATH}"

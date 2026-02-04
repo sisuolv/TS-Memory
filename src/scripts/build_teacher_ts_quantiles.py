@@ -131,7 +131,7 @@ def _rolling_mean_std_slope(x: np.ndarray, m: int) -> Tuple[np.ndarray, np.ndarr
 
 def _instance_norm_stats(x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
     """
-    InstanceNorm stats matching TS-RAG ChronosBolt InstanceNorm semantics.
+    InstanceNorm stats matching ChronosBolt InstanceNorm semantics.
 
     Returns (loc, scale, is_constant) where reduction is over the last dimension.
     For constant inputs, scale is forced to 1 and normalized values are overridden to 1.
@@ -303,7 +303,7 @@ def main():
         type=str,
         default="univariate",
         choices=["univariate", "multivariate"],
-        help="univariate: TS-RAG-style (treat each variable as an independent sample). "
+        help="univariate: treat each variable as an independent sample. "
         "multivariate: build samples with full (L,C) windows and teacher (Q,T,C) (reduces teacher_ds size).",
     )
     parser.add_argument(
@@ -350,7 +350,7 @@ def main():
         default="weighted_quantile",
         choices=["weighted_quantile", "rag_output"],
         help="weighted_quantile: teacher is weighted quantiles of retrieved horizons. "
-        "rag_output: teacher is the final TS-RAG output (ChronosBoltModelForForecastingWithRetrieval) run offline.",
+        "rag_output: teacher is the output of a retrieval-augmented ChronosBolt checkpoint run offline.",
     )
     parser.add_argument(
         "--teacher_align",
@@ -415,13 +415,13 @@ def main():
         "--rag_model_ckpt",
         type=str,
         default=str(PROJECT_ROOT / "checkpoints" / "chronos-bolt" / "best.pth"),
-        help="Path to TS-RAG retrieval-augmented ChronosBolt checkpoint (used when teacher_mode=rag_output).",
+        help="Path to a retrieval-augmented ChronosBolt checkpoint (used when teacher_mode=rag_output).",
     )
     parser.add_argument(
         "--rag_augment_mode",
         type=str,
         default="moe2",
-        help="Augment mode used by the TS-RAG checkpoint (used when teacher_mode=rag_output).",
+        help="Augment mode used by the retrieval-augmented checkpoint (used when teacher_mode=rag_output).",
     )
     parser.add_argument("--retrieval_database_dir", type=str, default="../retrieval_database/")
     parser.add_argument(
@@ -536,12 +536,12 @@ def main():
         raise ValueError(
             "teacher_mode=rag_output currently requires pred_len == base prediction_length "
             f"(pred_len={pred_len}, base={base_pred_len}). "
-            "TS-RAG ChronosBolt retrieval augmentation is trained for a fixed horizon (typically 64)."
+            "Retrieval-augmented checkpoints are typically trained for a fixed horizon."
         )
     if args.teacher_mode == "rag_output" and args.teacher_align != "none":
         print(
             f"[warn] teacher_align={args.teacher_align} ignored when teacher_mode=rag_output "
-            "(teacher comes from TS-RAG forward pass)."
+            "(teacher comes from retrieval-augmented forward pass)."
         )
 
     # Borders and scaling (fit scaler on TRAIN split to avoid leakage).
@@ -1267,7 +1267,7 @@ def main():
             print(f"[warn] skipped {skipped_all_inf} samples with no valid neighbors after drop_self")
         return
 
-    # Process each variable independently (TS-RAG treats each variable as a separate sample).
+    # Process each variable independently (treat each variable as a separate sample).
     for feat_id, var in enumerate(var_names):
         mean = torch.tensor(means[feat_id], device=device)
         scale = torch.tensor(scales[feat_id], device=device)

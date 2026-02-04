@@ -64,8 +64,6 @@ DRY_RUN="${DRY_RUN:-0}"
 DATA_ROOT="${DATA_ROOT:-}"
 if [ -z "${DATA_ROOT}" ]; then
   for candidate in \
-    "${REPO_DIR}/../TS-RAG/all_datasets" \
-    "${REPO_DIR}/../../TS-RAG/all_datasets" \
     "${REPO_DIR}/../all_datasets" \
     "${REPO_DIR}/../../all_datasets" \
     ; do
@@ -85,10 +83,8 @@ export DATA_ROOT
 if [ -z "${BASE_MODEL_PATH:-}" ]; then
   for candidate in \
     "${REPO_DIR}/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../TS-RAG-v1/TS-RAG/checkpoints/base" \
-    "${REPO_DIR}/../../TS-RAG-v1/TS-RAG/checkpoints/base" \
+    "${REPO_DIR}/../checkpoints/base" \
+    "${REPO_DIR}/../../checkpoints/base" \
     ; do
     if [ -f "${candidate}/config.json" ]; then
       BASE_MODEL_PATH="${candidate}"
@@ -242,7 +238,7 @@ fi
 
 # Optional: disguise Slurm job names (avoid exposing dataset/method in squeue/log filenames).
 DISGUISE_JOB_NAMES="${DISGUISE_JOB_NAMES:-0}" # 0/1
-DISGUISE_JOB_TAG="${DISGUISE_JOB_TAG:-kline-tech}"
+DISGUISE_JOB_TAG="${DISGUISE_JOB_TAG:-anon}"
 _job_name() {
   local stage="$1"
   local ds_idx="$2"

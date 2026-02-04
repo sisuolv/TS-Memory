@@ -31,12 +31,12 @@ Set `DATA_ROOT` to a folder that contains datasets in the Time‑Series‑Librar
   exchange_rate/exchange_rate.csv
 ```
 
-In this workspace, `DATA_ROOT` defaults to `../TS-RAG/all_datasets` if it exists.
+If unset, scripts try to auto-detect `../all_datasets` or `../../all_datasets` (relative to `src/`).
 
 ### Model
 
 Set `BASE_MODEL_PATH` to a ChronosBolt checkpoint directory containing `config.json` and weights.  
-If unset, scripts auto‑try common workspace locations (including `../TS-RAG/TS-RAG/checkpoints/base`).
+If unset, scripts default to `checkpoints/base` (relative to `src/`).
 
 ## Run (Local)
 

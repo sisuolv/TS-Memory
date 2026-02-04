@@ -51,7 +51,7 @@ def _guess_frequency(dataset_name: str) -> str:
 @torch.no_grad()
 def _embed_chronosbolt_last_token(model: ChronosBoltModelForForecasting, context: torch.Tensor) -> torch.Tensor:
     """
-    Return embeddings analogous to `ChronosPipeline.embed(...)[..., -1, :]` used by TS-RAG.
+    Return embeddings analogous to `ChronosPipeline.embed(...)[..., -1, :]`.
 
     We take the encoder last token hidden state (which corresponds to [REG] when enabled).
 
@@ -158,7 +158,7 @@ def main() -> None:
 
     # Write/refresh manifest (safe even with shards; content is deterministic).
     manifest = {
-        "format": "tsrag_retrieval_db_dir_v1",
+        "format": "retrieval_db_dir_v1",
         "dataset": dataset_name,
         "root_path": str(Path(args.root_path).resolve()),
         "data_path": args.data_path,
